@@ -12,6 +12,10 @@ on:
           - booking_api_test
           - dev_api
           - all
+      branch:
+        description: 'Branch to run the workflow on'
+        required: true
+        default: 'dev'
 
 permissions:
   contents: read
