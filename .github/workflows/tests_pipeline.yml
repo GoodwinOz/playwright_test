@@ -41,11 +41,11 @@ jobs:
         uses: actions/download-artifact@v3
       - name: booking_api_test
         if: "github.event.inputs.deployment_target == 'booking_api_test'"
-        run: pytest tests/test_button.py::test_button_exist --alluredir=allure-results
+        run: pytest tests/test_api_booking.py --alluredir=allure-results
         continue-on-error: true
       - name: dev_api_test
         if: "github.event.inputs.deployment_target == 'dev_api_test'"
-        run: pytest tests/test_button.py::test_button_exist_2 --alluredir=allure-results
+        run: pytest tests/test_api_dev.py --alluredir=allure-results
         continue-on-error: true
       - name: all
         if: github.event.inputs.deployment_target == 'all'
