@@ -24,49 +24,49 @@ permissions:
 
 jobs:
   download-history:
-    # if: false
-    runs-on: ubuntu-latest
-    name: Download history
-    steps:
-      - name: setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - run: >
-          ARTIFACT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/GoodwinOz/playwright_test/actions/artifacts?name=allure-results" 
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
-          &&
-          curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
-          -H "X-GitHub-Api-Version: 2022-11-28"
-          https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts/$ARTIFACT_ID/zip 
-          -o artifacts.zip &&
-          REPORT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts?name=github-pages" 
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
-          &&
-          curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts/$REPORT_ID/zip 
-          -o pages.zip
-      - run: mkdir allure-results && unzip artifacts.zip -d allure-results
-      - run: mkdir old_pages tests_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C tests_history
-      - run: cp tests_history/history/* allure-results && cp -r tests_history/history allure-results
-      - name: Store allure history
-        uses: actions/upload-artifact@v3
-        with:
-          name: allure-results
-          path:
-            allure-results
-          retention-days: 1
+        # if: false
+        runs-on: ubuntu-latest
+        name: Download history
+        steps:
+          - name: setup Python
+            uses: actions/setup-python@v4
+            with:
+              python-version: "3.10"
+          - run: >
+              ARTIFACT_ID=$(curl -L 
+              -H "Accept: application/vnd.github+json" 
+              -H "X-GitHub-Api-Version: 2022-11-28" 
+              "https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts?name=allure-results" 
+              | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
+              &&
+              curl -L 
+              -H "Accept: application/vnd.github+json" 
+              -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
+              -H "X-GitHub-Api-Version: 2022-11-28"
+              https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts/$ARTIFACT_ID/zip 
+              -o artifacts.zip &&
+              REPORT_ID=$(curl -L 
+              -H "Accept: application/vnd.github+json" 
+              -H "X-GitHub-Api-Version: 2022-11-28" 
+              "https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts?name=github-pages" 
+              | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
+              &&
+              curl -L 
+              -H "Accept: application/vnd.github+json" 
+              -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
+              -H "X-GitHub-Api-Version: 2022-11-28" 
+              https://api.github.com/repos/GoodwinOz/playwright_test/actions/artifacts/$REPORT_ID/zip 
+              -o pages.zip
+          - run: mkdir allure-results && unzip artifacts.zip -d allure-results
+          - run: mkdir old_pages tests_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C tests_history
+          - run: cp tests_history/history/* allure-results && cp -r tests_history/history allure-results
+          - name: Store allure history
+            uses: actions/upload-artifact@v3
+            with:
+              name: allure-results
+              path:
+                allure-results
+              retention-days: 1
   
   test:
     runs-on: ubuntu-latest
@@ -86,12 +86,12 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
       - name: booking_api_test
-        if: github.event.inputs.deployment_target == 'booking_api_test'
-        run: pytest tests/test_button.py::test_button_exist --alluredir=allure-results
+        if: "github.event.inputs.deployment_target == 'booking_api_test'"
+        run: pytest tests/api/test_api_booking.py --alluredir=allure-results
         continue-on-error: true
       - name: dev_api_test
-        if: github.event.inputs.deployment_target == 'dev_api_test'
-        run: pytest tests/test_button.py::test_button_exist_2 --alluredir=allure-results
+        if: "github.event.inputs.deployment_target == 'dev_api_test'"
+        run: pytest tests/api/test_api_dev.py --alluredir=allure-results
         continue-on-error: true
       - name: all
         if: github.event.inputs.deployment_target == 'all'
