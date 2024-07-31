@@ -82,10 +82,3 @@ Allure reporter will save the test results in "reports" folder after test execut
   ```sh
   allure serve reports
   ```
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[Playwright-pytest-url]: https://playwright.dev/python/docs/test-runners
-[Pytest-icon]: https://miro.medium.com/v2/resize:fit:800/1*F2BHs6p9erpiGKro5Pg1uQ.png
-[Playwright-url]: https://playwright.dev/python/
-[Playwright-icon]: https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg
