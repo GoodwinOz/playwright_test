@@ -48,8 +48,7 @@ After we have activated venv, we can start installing dependencies.
 At the moment we are able to run few test cases with API tests.
 For testing we have created two test cases, and each of them is using different web applications for verifying API requests.
 
-* [Restful-booker](https://restful-booker.herokuapp.com/apidoc/index.html) web application
-We are adding "verbose" (-v) and "show print statemt tags" (-s) for additional invomation
+* [Restful-booker](https://restful-booker.herokuapp.com/apidoc/index.html) web application. We are adding "verbose" (-v) and "show print statemt tags" (-s) for additional invomation
   ```sh
   pytest tests/api/test_api_booking.py -v -s
   ```
