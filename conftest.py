@@ -1,10 +1,14 @@
 import pytest
 import requests
+from playwright.sync_api import sync_playwright
 from playwright.sync_api import Page
 from endpoints.create_object import CreateBooking, CreateObject
 from endpoints.delete_object import DeleteObject
 from headers.headers import get_headers
 from payloads.payloads import create_booking_payload
+from pages.practicetest.practicetest_practice_page import PracticePage
+from pages.practicetest.practicetest_main_page import MainPage
+from pages.practicetest.practicetest_login_page import LoginPage
 
 @pytest.fixture()
 #Pre-condition
@@ -50,8 +54,40 @@ def booking_object_id(booking_auth_token):
     headers = get_headers(booking_auth_token)
     create_object.new_booking(payload=payload, headers=headers)
     booking_id = create_object.response_json['bookingid']
-    print(booking_id)
     yield booking_id
     #Post-condition; will be triggered after 'yield' response
     delete_object = DeleteObject()
     delete_object.delete_by_id(booking_id, headers=headers)
+
+#Fixtures for UI e2e
+@pytest.fixture(scope='session')
+def browser():
+    playwright = sync_playwright().start()
+    browser = playwright.chromium.launch(headless=False)  # Headless mode off for visibility
+    yield browser
+    browser.close()
+    playwright.stop()
+
+@pytest.fixture(scope='session')
+def context(browser):
+    context = browser.new_context()
+    yield context
+    context.close()
+
+@pytest.fixture(scope='session')
+def page(context):
+    page = context.new_page()
+    yield page
+    page.close()
+
+@pytest.fixture(scope='session')
+def practice_page(page):
+    return PracticePage(page)
+
+@pytest.fixture(scope='session')
+def main_page(page):
+    return MainPage(page)
+
+@pytest.fixture(scope='session')
+def login_page(page):
+    return LoginPage(page)
