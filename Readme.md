@@ -72,7 +72,10 @@ For testing we have created two test cases, and each of them is using different 
 - [x] Create pipeline for github actions
 - [x] Configure github pipeline for github CI
 - [x] Add allure report configuration to pipeline: saving history; uploading results on separate github page
-- [ ] Add few UI e2e test cases
+- [x] Add few UI e2e test cases
+- [ ] Add test reporting to telegram bot in case if tests executed from github CI
+- [ ] Add load test examples
+- [ ] Add description for prometeus & grafana configuration
 
 
 ## Allure reporter

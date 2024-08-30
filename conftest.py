@@ -1,5 +1,5 @@
-import pytest
-import requests
+import pytest, requests, os
+from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Page
 from endpoints.create_object import CreateBooking, CreateObject
@@ -9,7 +9,10 @@ from payloads.payloads import create_booking_payload
 from pages.practicetest.practicetest_practice_page import PracticePage
 from pages.practicetest.practicetest_main_page import MainPage
 from pages.practicetest.practicetest_login_page import LoginPage
+from pages.practicetest.practicetest_exceptions_page import ExceptionsPage
+load_dotenv()
 
+#Fixtures for API
 @pytest.fixture()
 #Pre-condition
 def obj_id():
@@ -38,10 +41,12 @@ def page(context):
 
 @pytest.fixture(scope='session')
 def booking_auth_token():
+    username = os.getenv("RESTFUL_BOOKER_USERNAME")
+    password = os.getenv("RESTFUL_BOOKER_PASSWORD")
     url = 'https://restful-booker.herokuapp.com/auth'
     payload = {
-        "username": "admin",
-        "password": "password123"
+        "username": username,
+        "password": password
     }
     response = requests.post(url, json=payload)
     response_json = response.json()
@@ -91,3 +96,13 @@ def main_page(page):
 @pytest.fixture(scope='session')
 def login_page(page):
     return LoginPage(page)
+
+@pytest.fixture(scope='session')
+def exceptions_page(page):
+    return ExceptionsPage(page)
+
+@pytest.fixture
+def reload_page(page: Page):
+    def _reload_page():
+        page.reload()
+    return _reload_page
