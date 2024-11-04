@@ -1,11 +1,18 @@
-import pytest
-import requests
+import pytest, requests, os
+from dotenv import load_dotenv
+from playwright.sync_api import sync_playwright
 from playwright.sync_api import Page
 from endpoints.create_object import CreateBooking, CreateObject
 from endpoints.delete_object import DeleteObject
 from headers.headers import get_headers
 from payloads.payloads import create_booking_payload
+from pages.practicetest.practicetest_practice_page import PracticePage
+from pages.practicetest.practicetest_main_page import MainPage
+from pages.practicetest.practicetest_login_page import LoginPage
+from pages.practicetest.practicetest_exceptions_page import ExceptionsPage
+load_dotenv()
 
+#Fixtures for API
 @pytest.fixture()
 #Pre-condition
 def obj_id():
@@ -34,10 +41,12 @@ def page(context):
 
 @pytest.fixture(scope='session')
 def booking_auth_token():
+    username = os.getenv("RESTFUL_BOOKER_USERNAME")
+    password = os.getenv("RESTFUL_BOOKER_PASSWORD")
     url = 'https://restful-booker.herokuapp.com/auth'
     payload = {
-        "username": "admin",
-        "password": "password123"
+        "username": username,
+        "password": password
     }
     response = requests.post(url, json=payload)
     response_json = response.json()
@@ -50,8 +59,50 @@ def booking_object_id(booking_auth_token):
     headers = get_headers(booking_auth_token)
     create_object.new_booking(payload=payload, headers=headers)
     booking_id = create_object.response_json['bookingid']
-    print(booking_id)
     yield booking_id
     #Post-condition; will be triggered after 'yield' response
     delete_object = DeleteObject()
     delete_object.delete_by_id(booking_id, headers=headers)
+
+#Fixtures for UI e2e
+@pytest.fixture(scope='session')
+def browser():
+    playwright = sync_playwright().start()
+    browser = playwright.chromium.launch(headless=False)  # Headless mode off for visibility
+    yield browser
+    browser.close()
+    playwright.stop()
+
+@pytest.fixture(scope='session')
+def context(browser):
+    context = browser.new_context()
+    yield context
+    context.close()
+
+@pytest.fixture(scope='session')
+def page(context):
+    page = context.new_page()
+    yield page
+    page.close()
+
+@pytest.fixture(scope='session')
+def practice_page(page):
+    return PracticePage(page)
+
+@pytest.fixture(scope='session')
+def main_page(page):
+    return MainPage(page)
+
+@pytest.fixture(scope='session')
+def login_page(page):
+    return LoginPage(page)
+
+@pytest.fixture(scope='session')
+def exceptions_page(page):
+    return ExceptionsPage(page)
+
+@pytest.fixture
+def reload_page(page: Page):
+    def _reload_page():
+        page.reload()
+    return _reload_page
